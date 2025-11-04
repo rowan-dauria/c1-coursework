@@ -1,0 +1,11 @@
+services:
+  backend:
+    build: ./backend
+    volumes:
+      - ./backend:/app
+    # --reload = watches for code changes and reloads (live-reload)
+    # --host 0.0.0.0 = exposes it to other containers (and our port map)
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    working_dir: /app
