@@ -3,6 +3,6 @@ from fastapi import FastAPI
 app = FastAPI()
 
 
-@app.get("/")
+@app.get("/api/")
 async def hello_world():
-    return {"message": "Hello World"}
+    return {"message": "Hello from the backend world!"}
