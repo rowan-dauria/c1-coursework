@@ -1,18 +1,12 @@
-# Use Python 3.11 as base image
+# Use Python 3.12 as base image
 FROM python:3.12-slim
 
 # Set working directory
 WORKDIR /app
 
 # Set environment variables
-# PYTHONDONTWRITEBYTECODE=1 Prevents Python from writing bytecode to disk
 # PYTHONUNBUFFERED=1 Prevents Python from buffering stdout and stderr
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
-
-# Install system dependencies if needed
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/*
+ENV PYTHONUNBUFFERED=1
 
 # Copy requirements file
 COPY requirements.txt .
@@ -24,7 +18,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy application code
 COPY . .
 
-# Expose port 8000 (default FastAPI port)
+# Specify which port the application will run on
 EXPOSE 8000
 
 # Command to run the FastAPI application
