@@ -1,7 +1,7 @@
 'use client';
 import { useState } from "react";
 
-export default function Home() {
+const Home = () => {
   const [backendGreeting, setBackendGreeting] = useState<string>("");
   return (
     <main>
@@ -11,7 +11,7 @@ export default function Home() {
       <p>{backendGreeting}</p>
     </main>
   );
-}
+};
 
 const fetchBackendGreeting = async (): Promise<string> => {
   try {
@@ -35,3 +35,5 @@ const Button = ({ fetchFunc, setBackendGreeting }:
     });
   }}>Backend Greeting</button>
 );
+
+export default Home;
