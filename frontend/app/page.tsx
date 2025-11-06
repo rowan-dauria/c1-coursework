@@ -15,7 +15,7 @@ export default function Home() {
 
 const fetchBackendGreeting = async (): Promise<string> => {
   try {
-    const response = await fetch('/api/');
+    const response = await fetch('/api');
     const data = await response.json();
     return data.message;
   } catch (error) {
