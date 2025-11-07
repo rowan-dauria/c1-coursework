@@ -1,6 +1,8 @@
 'use client';
 import { useState } from "react";
 
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
 const Home = () => {
   const [backendGreeting, setBackendGreeting] = useState<string>("");
   return (
@@ -15,7 +17,7 @@ const Home = () => {
 
 const fetchBackendGreeting = async (): Promise<string> => {
   try {
-    const response = await fetch('/api');
+    const response = await fetch(`${apiUrl}/api`);
     const data = await response.json();
     return data.message;
   } catch (error) {
