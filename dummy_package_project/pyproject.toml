@@ -12,7 +12,7 @@ build-backend = "setuptools.build_meta"
 name = "dummy_package"
 dynamic = ["version"] # this sets the package version based on git tag
 authors = [
-  { name="Rowan d'Auria, email="rd761@cam.ac.uk" },
+  { name="Rowan d'Auria", email="rd761@cam.ac.uk" },
 ]
 description = "A small example package"
 readme = "README.md"
@@ -29,4 +29,5 @@ Homepage = "https://github.com/your-username/mypackage-project"
 "Bug Tracker" = "https://github.com/your-username/mypackage-project/issues"
 
 [tool.setuptools_scm]
-write_to = "dummy_package/_version.py"
+root = ".."
+write_to = "dummy_package_project/dummy_package/version.py"
