@@ -1,0 +1,28 @@
+[build-system]
+# These are the build tools needed to create your package
+requires = [
+    "setuptools>=61.0",
+    "wheel"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+# Core metadata about your package
+name = "dummy_package"
+dynamic = ["version"] # this sets the package version based on git tag
+authors = [
+  { name="Rowan d'Auria, email="rd761@cam.ac.uk" },
+]
+description = "A small example package"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/your-username/mypackage-project"
+"Bug Tracker" = "https://github.com/your-username/mypackage-project/issues"
