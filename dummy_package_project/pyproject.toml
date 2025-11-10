@@ -2,7 +2,8 @@
 # These are the build tools needed to create your package
 requires = [
     "setuptools>=61.0",
-    "wheel"
+    "wheel",
+    "setuptools-scm"
 ]
 build-backend = "setuptools.build_meta"
 
@@ -26,3 +27,6 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/your-username/mypackage-project"
 "Bug Tracker" = "https://github.com/your-username/mypackage-project/issues"
+
+[tool.setuptools_scm]
+write_to = "dummy_package/_version.py"
