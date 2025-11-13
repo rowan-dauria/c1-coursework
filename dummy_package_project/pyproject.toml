@@ -16,7 +16,7 @@ dev = [
 
 [project]
 # Core metadata about your package
-name = "dummy_package-rd"
+name = "dummy_package_rd"
 dynamic = ["version"] # this sets the package version based on git tag
 authors = [
   { name="Rowan d'Auria", email="rd761@cam.ac.uk" },
