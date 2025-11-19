@@ -1,7 +1,7 @@
 'use client';
 import { useState } from "react";
+import FileUpload from "./components/FileUpload";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const Home = () => {
   const [backendGreeting, setBackendGreeting] = useState<string>("");
@@ -11,13 +11,14 @@ const Home = () => {
       <p>This is a barebones Next.js application running in Docker.</p>
       <Button fetchFunc={fetchBackendGreeting} setBackendGreeting={setBackendGreeting} />
       <p>{backendGreeting}</p>
+      <FileUpload />
     </main>
   );
 };
 
 const fetchBackendGreeting = async (): Promise<string> => {
   try {
-    const response = await fetch(`${apiUrl}/api`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api`);
     const data = await response.json();
     return data.message;
   } catch (error) {

@@ -5,6 +5,7 @@ FROM node:22-alpine
 WORKDIR /app
 
 # Set environment variables
+#! change to production for production
 ENV NODE_ENV=development
 
 # Copy package files
@@ -20,4 +21,4 @@ COPY . .
 EXPOSE 3000
 
 # Command to run the Next.js development server
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "dev"] #! change to start for production
