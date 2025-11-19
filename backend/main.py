@@ -2,7 +2,7 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 import os
 import shutil
 from fastapi.middleware.cors import CORSMiddleware
-import fiveD_NN_package
+import fiveD_NN
 
 app = FastAPI()
 
@@ -38,4 +38,12 @@ async def upload_file(file: UploadFile = File(...)):
         shutil.copyfileobj(file.file, buffer)
 
     return {"message": "File uploaded successfully"}
+
+@app.get("/version")
+async def get_version():
+    """
+    Returns the current version of the fiveD_NN_package.
+    """
+    return {"version": fiveD_NN_package.__version__}
+
 
