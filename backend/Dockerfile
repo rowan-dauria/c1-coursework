@@ -15,8 +15,8 @@ COPY requirements.txt .
 
 # Install Python dependencies
 RUN python -m pip install --no-cache-dir --upgrade pip && \
-    python -m pip install --no-cache-dir -r requirements.txt && \
-    python -m pip install --no-cache-dir --extra-index-url https://test.pypi.org/simple/ dummy-package-rd
+    python -m pip install --no-cache-dir -r requirements.txt
+# python -m pip install --no-cache-dir --extra-index-url https://test.pypi.org/simple/ dummy-package-rd
 
 # Copy application code
 COPY . .
