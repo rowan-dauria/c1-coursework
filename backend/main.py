@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile, HTTPException
+import os
+import shutil
 from fastapi.middleware.cors import CORSMiddleware
 
 import dummy_package_rd
@@ -26,4 +28,17 @@ async def version():
         return {"version": dummy_package_rd.__version__}
     except:
         return {"error": "Could not resolve version"}
+
+@app.post("/upload")
+async def upload_file(file: UploadFile = File(...)):
+    if not file.filename.endswith('.pkl'):
+        raise HTTPException(status_code=400, detail="Only .pkl files are allowed")
+
+    os.makedirs("data", exist_ok=True)
+    file_location = "data/data.pkl"
+
+    with open(file_location, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    return {"message": "File uploaded successfully"}
 
