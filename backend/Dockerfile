@@ -4,6 +4,8 @@ FROM python:3.12-slim
 # Set working directory
 WORKDIR /app
 
+# todo add a data directory?
+
 # Set environment variables
 # PYTHONUNBUFFERED=1 Prevents Python from buffering stdout and stderr
 ENV PYTHONUNBUFFERED=1
@@ -12,8 +14,9 @@ ENV PYTHONUNBUFFERED=1
 COPY requirements.txt .
 
 # Install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+RUN python -m pip install --no-cache-dir --upgrade pip && \
+    python -m pip install --no-cache-dir -r requirements.txt && \
+    python -m pip install --no-cache-dir --extra-index-url https://test.pypi.org/simple/ dummy-package-rd
 
 # Copy application code
 COPY . .

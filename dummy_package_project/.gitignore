@@ -24,3 +24,5 @@ ENV/
 
 # macOS
 .DS_Store
+
+dummy_package_rd/version.py
