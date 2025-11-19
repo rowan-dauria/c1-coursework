@@ -18,6 +18,10 @@ app.add_middleware(
 )
 
 
+@app.get("/health")
+async def health_check():
+    return {"status": "OK"}
+
 @app.get("/api")
 async def hello_world():
     return {"message": "Hello from the backend world!"}
