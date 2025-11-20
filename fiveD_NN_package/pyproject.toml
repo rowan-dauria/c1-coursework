@@ -14,7 +14,7 @@ dynamic = ["version"] # this sets the package version based on git tag
 authors = [
   { name="Rowan d'Auria", email="rd761@cam.ac.uk" },
 ]
-description = "A lightweight backend server for 5D interpolation"
+description = "A lightweight, configurable neural network for 5D interpolation."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
