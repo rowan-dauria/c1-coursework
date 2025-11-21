@@ -6,12 +6,13 @@
 fivedreg documentation
 ======================
 
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
+Welcome to the fivedreg documentation!
 
+fivedreg is a lightweight neural network implementation using TensorFlow, designed for fast training on CPU with 5D pandas DataFrame input.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+
+   api
 
