@@ -1,0 +1,14 @@
+# Sphinx and documentation dependencies
+sphinx>=5.0.0
+sphinx-autodoc-typehints
+sphinx-rtd-theme
+
+# Package dependencies needed for autodoc to import fivedreg
+tensorflow>=2.10.0,<3.0.0
+pandas>=1.3.0
+numpy>=1.21.0
+
+# Install fivedreg package in editable mode
+# Path is relative to repository root (where Read the Docs runs pip from)
+-e ./fiveD_NN_package
+

@@ -18,7 +18,10 @@ import sys
 import os
 
 # Add the parent directory to the path so we can import fivedreg
-sys.path.insert(0, os.path.abspath('../fiveD_NN_package'))
+# This works both when the package is installed and when building locally
+package_path = os.path.abspath('../fiveD_NN_package')
+if os.path.exists(package_path):
+    sys.path.insert(0, package_path)
 
 extensions = [
     'sphinx.ext.autodoc',
