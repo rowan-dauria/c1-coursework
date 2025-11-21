@@ -2,7 +2,10 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 import os
 import shutil
 from fastapi.middleware.cors import CORSMiddleware
-import fivedreg
+# todo: change this back to a regular import before pushing to gitlab
+from fiveD_NN_package import fivedreg
+
+model = fivedreg.LightweightNN(output_activation="linear", random_state=42)
 
 app = FastAPI()
 
@@ -39,7 +42,17 @@ async def upload_file(file: UploadFile = File(...)):
 
     return {"message": "File uploaded successfully"}
 
-@app.get("/version")
+@app.get("/train")
+async def train():
+    data_loader = fivedreg.data.DataLoader("data/data.pkl")
+    dataset = data_loader.load_data()
+    try:
+        model.fit(dataset['X'], dataset['y'])
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error training model: {e}")
+    return {"message": "Model trained successfully", "model_summary": model.summary()}
+
+@app.get("/package-version")
 async def get_version():
     """
     Returns the current version of the fiveD_NN_package.
