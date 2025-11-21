@@ -3,4 +3,3 @@ uvicorn[standard]
 pandas
 numpy
 python-multipart
-fiveD-NN

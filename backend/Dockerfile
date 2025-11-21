@@ -11,15 +11,22 @@ WORKDIR /app
 ENV PYTHONUNBUFFERED=1
 
 # Copy requirements file
-COPY requirements.txt .
+COPY backend/requirements.txt .
+
+# Copy package to /opt (outside /app) so it persists despite volume mounts
+COPY fiveD_NN_package/ /opt/fiveD_NN_package/
 
 # Install Python dependencies
+# todo: install fivedreg from pypi before adding to gitlab repo
+# todo: remove SETUPTOOLS env var and python installing fivedreg from editable source
+# Set version for setuptools-scm since .git directory is not available in Docker build
+ENV SETUPTOOLS_SCM_PRETEND_VERSION_FOR_FIVEDREG=0.0.4.dev5
 RUN python -m pip install --no-cache-dir --upgrade pip && \
-    python -m pip install --no-cache-dir -r requirements.txt
-# python -m pip install --no-cache-dir --extra-index-url https://test.pypi.org/simple/ dummy-package-rd
+    python -m pip install --no-cache-dir -r requirements.txt && \
+    python -m pip install --no-cache-dir -e /opt/fiveD_NN_package
 
 # Copy application code
-COPY . .
+COPY backend/main.py .
 
 # Specify which port the application will run on
 EXPOSE 8000

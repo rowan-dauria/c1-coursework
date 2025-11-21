@@ -1,6 +1,9 @@
 services:
+  # the build context is the root directory so that the fiveD_NN_package directory is found
   backend:
-    build: ./backend
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
     volumes:
       - ./backend:/app
     # --reload = watches for code changes and reloads (live-reload)
