@@ -2,7 +2,7 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 import os
 import shutil
 from fastapi.middleware.cors import CORSMiddleware
-import fiveD_NN
+import fivedreg
 
 app = FastAPI()
 
@@ -44,6 +44,6 @@ async def get_version():
     """
     Returns the current version of the fiveD_NN_package.
     """
-    return {"version": fiveD_NN_package.__version__}
+    return {"version": fivedreg.__version__}
 
 
