@@ -1,0 +1,58 @@
+#############################
+# Global ignore for backend build
+# (docker-compose builds backend with context: .)
+#############################
+
+# Version control
+.git
+.gitignore
+**/.git
+**/.gitignore
+
+# Python bytecode / cache
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info
+*.dist-info
+.eggs/
+
+# Virtual environments
+venv/
+**/venv/
+.venv/
+**/.venv/
+env/
+**/env/
+.env
+.env.*
+**/.env
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node / frontend artifacts (not needed for backend image)
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+
+# Build / dist artifacts
+**/dist/
+**/build/
+*.log
+
+# Local data (mounted or handled outside the image)
+backend/data/
+
+
