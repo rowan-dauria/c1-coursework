@@ -64,3 +64,6 @@ yarn-error.log*
 # Other
 .pnp
 .pnp.js
+
+# --- Backend ---
+backend/data/*
