@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-const FileUpload = () => {
+const FileUpload = ({ onUploadSuccess }: { onUploadSuccess: (data: any) => void }) => {
     const [file, setFile] = useState<File | null>(null);
     const [status, setStatus] = useState<string>('');
 
@@ -35,7 +35,11 @@ const FileUpload = () => {
             });
 
             if (response.ok) {
+                const data = await response.json();
                 setStatus('Upload successful!');
+                if (data.data_summary) {
+                    onUploadSuccess(data.data_summary);
+                }
             } else {
                 setStatus('Upload failed.');
             }

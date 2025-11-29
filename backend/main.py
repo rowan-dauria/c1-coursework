@@ -49,7 +49,18 @@ async def upload_file(file: UploadFile = File(...)):
     with open(file_location, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    return {"message": "File uploaded successfully"}
+    try:
+        data_loader = fivedreg.data.DataLoader(file_location)
+        ds = data_loader.load_data()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error loading data: {e}")
+
+    try:
+        data_summary = data_loader.get_data_summary(ds)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting data summary: {e}")
+
+    return {"message": "File uploaded successfully", "data_summary": data_summary}
 
 @app.get("/train")
 async def train():
