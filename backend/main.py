@@ -44,13 +44,17 @@ async def upload_file(file: UploadFile = File(...)):
 
 @app.get("/train")
 async def train():
-    data_loader = fivedreg.data.DataLoader("data/data.pkl")
-    dataset = data_loader.load_data()
+    # error handling for file not found
+    if not os.path.exists("data/data.pkl"):
+        raise HTTPException(status_code=404, detail="File not found. Please upload training data first.")
+
     try:
+        data_loader = fivedreg.data.DataLoader("data/data.pkl")
+        dataset = data_loader.load_data()
         model.fit(dataset['X'], dataset['y'])
+        return {"message": "Model trained successfully", "model_summary": model.summary()}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error training model: {e}")
-    return {"message": "Model trained successfully", "model_summary": model.summary()}
 
 @app.get("/package-version")
 async def get_version():

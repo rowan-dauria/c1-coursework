@@ -5,12 +5,27 @@ import FileUpload from "./components/FileUpload";
 
 const Home = () => {
   const [backendGreeting, setBackendGreeting] = useState<string>("");
+  const [trainStatus, setTrainStatus] = useState<string>("");
   return (
     <main>
       <h1>Welcome to Next.js</h1>
       <p>This is a barebones Next.js application running in Docker.</p>
       <Button fetchFunc={fetchBackendGreeting} setBackendGreeting={setBackendGreeting} />
       <p>{backendGreeting}</p>
+      <button onClick={async () => {
+        setTrainStatus("Training...");
+        try {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/train`);
+          const data = await response.json();
+          setTrainStatus(data.message || "Training completed successfully");
+        } catch (error) {
+          console.error(error);
+          setTrainStatus("Error training model");
+        }
+      }} style={{ marginTop: '10px' }}>
+        Train Model
+      </button>
+      {trainStatus && <p style={{ marginTop: '10px' }}>{trainStatus}</p>}
       <FileUpload />
     </main>
   );
