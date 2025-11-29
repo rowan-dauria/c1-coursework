@@ -1,11 +1,19 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
 import os
 import shutil
+import logging
 from fastapi.middleware.cors import CORSMiddleware
-# todo: change this back to a regular import before pushing to gitlab
-from fiveD_NN_package import fivedreg
 
-model = fivedreg.LightweightNN(output_activation="linear", random_state=42)
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+# todo: change this back to a regular import before pushing to gitlab
+import fivedreg
+
+model = fivedreg.LightweightNN(
+    output_activation="linear",
+    random_state=42,
+    verbose=2
+)
 
 app = FastAPI()
 
@@ -44,16 +52,24 @@ async def upload_file(file: UploadFile = File(...)):
 
 @app.get("/train")
 async def train():
+    logging.info("Train endpoint called")
     # error handling for file not found
     if not os.path.exists("data/data.pkl"):
+        logging.error("Training data file not found at data/data.pkl")
         raise HTTPException(status_code=404, detail="File not found. Please upload training data first.")
 
     try:
+        logging.info("Loading data from data/data.pkl")
         data_loader = fivedreg.data.DataLoader("data/data.pkl")
         dataset = data_loader.load_data()
+
+        logging.info("Starting model training")
         model.fit(dataset['X'], dataset['y'])
-        return {"message": "Model trained successfully", "model_summary": model.summary()}
+
+        logging.info("Model training completed successfully")
+        return {"message": "Model trained successfully", "model_summary": model.model.summary()}
     except Exception as e:
+        logging.error(f"Error training model: {e}")
         raise HTTPException(status_code=500, detail=f"Error training model: {e}")
 
 @app.get("/package-version")
