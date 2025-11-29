@@ -98,3 +98,40 @@ async def get_version():
     return {"version": fivedreg.__version__}
 
 
+@app.post("/predict")
+async def predict(data: dict):
+    """
+    Make predictions using the trained model.
+    Expects a JSON body with keys x1, x2, x3, x4, x5.
+    """
+    try:
+        # Validate input
+        required_features = ['x1', 'x2', 'x3', 'x4', 'x5']
+        missing_features = [f for f in required_features if f not in data]
+        if missing_features:
+            raise HTTPException(status_code=400, detail=f"Missing required features: {', '.join(missing_features)}")
+
+        # Extract features
+        features = [
+            float(data['x1']),
+            float(data['x2']),
+            float(data['x3']),
+            float(data['x4']),
+            float(data['x5'])
+        ]
+
+        # Create DataFrame for prediction (as expected by LightweightNN)
+        import pandas as pd
+        import numpy as np
+
+        X_pred = pd.DataFrame([features], columns=['x1', 'x2', 'x3', 'x4', 'x5'])
+
+        # Make prediction
+        prediction = model.predict(X_pred)
+
+        return {"prediction": float(prediction[0][0])}
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logging.error(f"Error making prediction: {e}")
+        raise HTTPException(status_code=500, detail=f"Error making prediction: {e}")
