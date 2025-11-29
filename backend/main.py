@@ -12,7 +12,8 @@ import fivedreg
 model = fivedreg.LightweightNN(
     output_activation="linear",
     random_state=42,
-    verbose=2
+    verbose=2,
+    max_iter=100
 )
 
 app = FastAPI()
@@ -67,7 +68,24 @@ async def train():
         model.fit(dataset['X'], dataset['y'])
 
         logging.info("Model training completed successfully")
-        return {"message": "Model trained successfully", "model_summary": model.model.summary()}
+
+        # Capture model structure
+        model_structure = []
+        for layer in model.model.layers:
+            try:
+                output_shape = layer.output.shape
+            except AttributeError:
+                output_shape = "N/A"
+
+            layer_info = {
+                "name": layer.name,
+                "type": layer.__class__.__name__,
+                "output_shape": str(output_shape),
+                "params": layer.count_params()
+            }
+            model_structure.append(layer_info)
+
+        return {"message": "Model trained successfully", "model_structure": model_structure}
     except Exception as e:
         logging.error(f"Error training model: {e}")
         raise HTTPException(status_code=500, detail=f"Error training model: {e}")
