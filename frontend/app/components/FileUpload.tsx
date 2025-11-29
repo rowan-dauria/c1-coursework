@@ -46,13 +46,42 @@ const FileUpload = () => {
     };
 
     return (
-        <div style={{ margin: '20px 0', padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
-            <h3>Upload .pkl File</h3>
-            <input type="file" accept=".pkl" onChange={handleFileChange} />
-            <button onClick={handleUpload} style={{ marginLeft: '10px' }}>
-                Upload
+        <div style={{
+            marginTop: 'auto',
+            padding: '20px',
+            border: '2px dashed #333',
+            borderRadius: '15px',
+            textAlign: 'center',
+            cursor: 'pointer'
+        }}>
+            <h3 style={{ marginBottom: '10px' }}>Drag upload box</h3>
+            <input type="file" accept=".pkl" onChange={handleFileChange} style={{ display: 'none' }} id="file-upload" />
+            <div style={{ marginBottom: '10px' }}>
+                <label htmlFor="file-upload" style={{
+                    display: 'inline-block',
+                    padding: '8px 16px',
+                    backgroundColor: '#e2e8f0',
+                    border: '1px solid #cbd5e0',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                    marginRight: '10px'
+                }}>
+                    Browse
+                </label>
+                <span>{file ? file.name : "No file selected"}</span>
+            </div>
+            <button onClick={handleUpload} style={{
+                padding: '8px 16px',
+                backgroundColor: '#90cdf4',
+                border: '2px solid #3182ce',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: 'bold'
+            }}>
+                upload
             </button>
-            {status && <p style={{ marginTop: '10px', color: 'red' }}>{status}</p>}
+            {status && <p style={{ marginTop: '10px', color: status.includes('success') ? 'green' : 'red' }}>{status}</p>}
         </div>
     );
 };
