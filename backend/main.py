@@ -89,7 +89,7 @@ async def train(request: TrainRequest):
         dataset = data_loader.load_data()
 
         logging.info("Updating model parameters")
-        model.set_params(**request.dict())
+        model.set_params(**request.model_dump())
 
         logging.info("Starting model training")
         model.fit(dataset['X'], dataset['y'])
