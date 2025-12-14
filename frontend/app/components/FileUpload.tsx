@@ -1,26 +1,52 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 const FileUpload = ({ onUploadSuccess }: { onUploadSuccess: (data: any) => void }) => {
     const [file, setFile] = useState<File | null>(null);
-    const [status, setStatus] = useState<string>('');
+    const [status, setStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
+    const [message, setMessage] = useState<string>('');
+    const [isDragOver, setIsDragOver] = useState<boolean>(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
+        if (e.target.files && e.target.files[0]) {
             setFile(e.target.files[0]);
-            setStatus('');
+            setStatus('idle');
+            setMessage('');
+        }
+    };
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragOver(true);
+    };
+
+    const handleDragLeave = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragOver(false);
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragOver(false);
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            setFile(e.dataTransfer.files[0]);
+            setStatus('idle');
+            setMessage('');
         }
     };
 
     const handleUpload = async () => {
         if (!file) {
-            setStatus('Please select a file first.');
+            setStatus('error');
+            setMessage('Please select a file first.');
             return;
         }
 
         if (!file.name.endsWith('.pkl')) {
-            setStatus('Only .pkl files are allowed.');
+            setStatus('error');
+            setMessage('Only .pkl files are allowed.');
             return;
         }
 
@@ -28,7 +54,8 @@ const FileUpload = ({ onUploadSuccess }: { onUploadSuccess: (data: any) => void 
         formData.append('file', file);
 
         try {
-            setStatus('Uploading...');
+            setStatus('uploading');
+            setMessage('');
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/upload`, {
                 method: 'POST',
                 body: formData,
@@ -36,56 +63,154 @@ const FileUpload = ({ onUploadSuccess }: { onUploadSuccess: (data: any) => void 
 
             if (response.ok) {
                 const data = await response.json();
-                setStatus('Upload successful!');
+                setStatus('success');
+                setMessage('Dataset uploaded successfully');
                 if (data.data_summary) {
                     onUploadSuccess(data.data_summary);
                 }
             } else {
-                setStatus('Upload failed.');
+                const errorData = await response.json();
+                setStatus('error');
+                setMessage(errorData.detail || 'Upload failed.');
             }
         } catch (error) {
             console.error('Upload error:', error);
-            setStatus('An error occurred during upload.');
+            setStatus('error');
+            setMessage('Connection error. Check if server is running.');
         }
     };
 
     return (
-        <div style={{
-            marginTop: 'auto',
-            padding: '20px',
-            border: '2px dashed #333',
-            borderRadius: '15px',
-            textAlign: 'center',
-            cursor: 'pointer'
-        }}>
-            <h3 style={{ marginBottom: '10px' }}>Drag upload box</h3>
-            <input type="file" accept=".pkl" onChange={handleFileChange} style={{ display: 'none' }} id="file-upload" />
-            <div style={{ marginBottom: '10px' }}>
-                <label htmlFor="file-upload" style={{
-                    display: 'inline-block',
-                    padding: '8px 16px',
-                    backgroundColor: '#e2e8f0',
-                    border: '1px solid #cbd5e0',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    fontWeight: 'bold',
-                    marginRight: '10px'
-                }}>
-                    Browse
-                </label>
-                <span>{file ? file.name : "No file selected"}</span>
+        <div
+            className={`dropzone ${isDragOver ? 'dropzone-active' : ''}`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            onClick={() => fileInputRef.current?.click()}
+            style={{
+                marginTop: 'auto',
+                background: isDragOver ? 'rgba(6, 182, 212, 0.1)' : 'transparent'
+            }}
+        >
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pkl"
+                onChange={handleFileChange}
+                style={{ display: 'none' }}
+            />
+
+            <div style={{ marginBottom: '0.75rem' }}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={isDragOver ? 'var(--accent-primary)' : 'var(--text-muted)'} strokeWidth="1.5" style={{ transition: 'all 0.2s ease' }}>
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
             </div>
-            <button onClick={handleUpload} style={{
-                padding: '8px 16px',
-                backgroundColor: '#90cdf4',
-                border: '2px solid #3182ce',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontWeight: 'bold'
+
+            {file ? (
+                <div style={{ marginBottom: '0.75rem' }}>
+                    <div style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        padding: '0.5rem 1rem',
+                        background: 'rgba(6, 182, 212, 0.1)',
+                        border: '1px solid rgba(6, 182, 212, 0.3)',
+                        borderRadius: 'var(--radius-md)',
+                    }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" strokeWidth="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        <span style={{
+                            fontFamily: "'JetBrains Mono', monospace",
+                            fontSize: '0.8rem',
+                            color: 'var(--text-primary)'
+                        }}>
+                            {file.name}
+                        </span>
+                    </div>
+                </div>
+            ) : (
+                <p style={{
+                    fontFamily: "'JetBrains Mono', monospace",
+                    fontSize: '0.8rem',
+                    color: 'var(--text-muted)',
+                    marginBottom: '0.5rem'
+                }}>
+                    Drag & drop or click to browse
+                </p>
+            )}
+
+            <p style={{
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: '0.65rem',
+                color: 'var(--text-muted)',
+                marginBottom: '1rem'
             }}>
-                upload
+                Accepts .pkl files only
+            </p>
+
+            <button
+                onClick={(e) => {
+                    e.stopPropagation();
+                    handleUpload();
+                }}
+                className="btn-secondary"
+                disabled={status === 'uploading'}
+                style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                }}
+            >
+                {status === 'uploading' ? (
+                    <>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ animation: 'spin 1s linear infinite' }}>
+                            <path d="M21 12a9 9 0 1 1-6.219-8.56" strokeLinecap="round"/>
+                        </svg>
+                        Uploading...
+                    </>
+                ) : (
+                    <>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        Upload Dataset
+                    </>
+                )}
             </button>
-            {status && <p style={{ marginTop: '10px', color: status.includes('success') ? 'green' : 'red' }}>{status}</p>}
+
+            {message && (
+                <p style={{
+                    marginTop: '0.75rem',
+                    fontFamily: "'JetBrains Mono', monospace",
+                    fontSize: '0.75rem',
+                    color: status === 'success' ? 'var(--accent-success)' : 'var(--accent-error)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.375rem'
+                }}>
+                    {status === 'success' ? (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    ) : (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 8v4M12 16h.01" strokeLinecap="round"/>
+                        </svg>
+                    )}
+                    {message}
+                </p>
+            )}
+
+            <style jsx>{`
+                @keyframes spin {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
+            `}</style>
         </div>
     );
 };
