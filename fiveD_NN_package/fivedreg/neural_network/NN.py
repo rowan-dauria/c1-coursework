@@ -86,6 +86,7 @@ class LightweightNN:
         self.is_fitted_ = False
         self.input_dim_ = None
         self.output_dim_ = None
+        self.history_ = None
 
         # Set random seeds for reproducibility
         if self.random_state is not None:
@@ -237,7 +238,7 @@ class LightweightNN:
         batch_size = min(32, len(X_array))
         batch_size = max(1, batch_size)  # Ensure at least 1
 
-        self.model.fit(
+        self.history_ = self.model.fit(
             X_array,
             y_array,
             epochs=self.max_iter,
@@ -250,6 +251,19 @@ class LightweightNN:
 
         self.is_fitted_ = True
         return self
+
+    def get_history(self) -> tf.keras.callbacks.History:
+        """
+        Get the training history.
+
+        Returns
+        -------
+        history : tf.keras.callbacks.History
+            Training history.
+        """
+        if self.history_ is None:
+            raise ValueError("Model has not been fitted yet. Call fit(X, y) first.")
+        return self.history_
 
     def predict(self, X: Union[pd.DataFrame, np.ndarray]) -> np.ndarray:
         """
