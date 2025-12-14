@@ -5,6 +5,7 @@ Designed for fast training on CPU with 5D pandas DataFrame input.
 
 import numpy as np
 import pandas as pd
+import keras
 import tensorflow as tf
 from typing import Union, List, Optional
 
@@ -105,14 +106,14 @@ class LightweightNN:
             Number of output features.
         """
         # Build sequential model
-        model = tf.keras.Sequential()
+        model = keras.Sequential()
 
         # Input layer
-        model.add(tf.keras.layers.Input(shape=(input_dim,)))
+        model.add(keras.layers.Input(shape=(input_dim,)))
 
         # Hidden layers
         for neurons in self.hidden_layers:
-            model.add(tf.keras.layers.Dense(
+            model.add(keras.layers.Dense(
                 neurons,
                 activation=self.activation,
                 kernel_initializer='glorot_uniform',
@@ -120,7 +121,7 @@ class LightweightNN:
             ))
 
         # Output layer
-        model.add(tf.keras.layers.Dense(
+        model.add(keras.layers.Dense(
             output_dim,
             activation=self.output_activation,
             kernel_initializer='glorot_uniform',
@@ -129,7 +130,7 @@ class LightweightNN:
 
         # Compile model with optimized settings for CPU
         model.compile(
-            optimizer=tf.keras.optimizers.Adam(learning_rate=self.learning_rate),
+            optimizer=keras.optimizers.Adam(learning_rate=self.learning_rate),
             loss='mse',  # Mean squared error for regression
             metrics=['mae']  # Mean absolute error as additional metric
         )
@@ -225,7 +226,7 @@ class LightweightNN:
         callbacks = []
 
         # Early stopping for efficiency (optional, but helps prevent overfitting)
-        early_stopping = tf.keras.callbacks.EarlyStopping(
+        early_stopping = keras.callbacks.EarlyStopping(
             monitor='loss',
             patience=min(50, self.max_iter // 10),  # Adaptive patience
             restore_best_weights=False,
@@ -252,13 +253,13 @@ class LightweightNN:
         self.is_fitted_ = True
         return self
 
-    def get_history(self) -> tf.keras.callbacks.History:
+    def get_history(self) -> keras.callbacks.History:
         """
         Get the training history.
 
         Returns
         -------
-        history : tf.keras.callbacks.History
+        history : keras.callbacks.History
             Training history.
         """
         if self.history_ is None:
