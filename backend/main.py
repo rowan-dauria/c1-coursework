@@ -62,9 +62,22 @@ async def upload_file(file: UploadFile = File(...)):
 
     return {"message": "File uploaded successfully", "data_summary": data_summary}
 
-@app.get("/train")
-async def train():
-    logging.info("Train endpoint called")
+from pydantic import BaseModel
+from typing import List, Optional
+
+# ... (existing imports)
+
+class TrainRequest(BaseModel):
+    hidden_layers: List[int] = [64, 32, 16]
+    learning_rate: float = 0.001
+    max_iter: int = 100
+    activation: str = 'relu'
+    output_activation: str = 'linear'
+    random_state: int = 42
+
+@app.post("/train")
+async def train(request: TrainRequest):
+    logging.info(f"Train endpoint called with params: {request.dict()}")
     # error handling for file not found
     if not os.path.exists("data/data.pkl"):
         logging.error("Training data file not found at data/data.pkl")
@@ -74,6 +87,9 @@ async def train():
         logging.info("Loading data from data/data.pkl")
         data_loader = fivedreg.data.DataLoader("data/data.pkl")
         dataset = data_loader.load_data()
+
+        logging.info("Updating model parameters")
+        model.set_params(**request.dict())
 
         logging.info("Starting model training")
         model.fit(dataset['X'], dataset['y'])
