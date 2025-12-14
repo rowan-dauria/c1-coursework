@@ -1,0 +1,5 @@
+numpy
+matplotlib
+memory_profiler
+scikit-learn
+-e ../fiveD_NN_package
