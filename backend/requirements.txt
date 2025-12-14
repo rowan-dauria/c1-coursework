@@ -2,3 +2,5 @@ fastapi
 uvicorn[standard]
 numpy
 python-multipart
+# todo: change to regular package import before pushing to gitlab
+-e ../fiveD_NN_package
