@@ -1,5 +1,10 @@
 # c1-coursework
 
+## Documentation & Package
+
+* [FiveDReg ReadTheDocs](https://c1-coursework-docs.readthedocs.io/en/latest)
+* [FiveDReg PyPI Package](https://pypi.org/project/fivedreg/#description)
+
 ## Quickstart
 
 ### Starting the Application
