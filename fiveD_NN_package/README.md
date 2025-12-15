@@ -1,53 +1,31 @@
-# Dummy Package Project
+# fivedreg
 
-This is an example Python package structure with a simple dummy module and class.
-
-## Project Structure
-
-```
-dummy_package_project/
-├── dummy_package/
-│   ├── __init__.py
-│   └── dummy_module/
-│       ├── __init__.py
-│       └── dummy_class.py
-├── README.md
-```
+A lightweight, configurable neural network for 5D interpolation.
 
 ## Installation
 
-Clone this repository, navigate to the `dummy_package_project` folder and you can install the package locally:
+Install from PyPI:
 
 ```bash
-pip install .
+pip install fivedreg
 ```
 
-## Usage
+**Requirements:** Python >= 3.12
 
-Example usage of the `DummyClass`:
+## Quick Start
 
 ```python
-from dummy_package.dummy_module import DummyClass
+from fivedreg import LightweightNN, DataLoader
 
-obj = DummyClass()
-print(obj.__name__)  # Output: DummyClass
-print(obj.age)       # Output: Not very old
-print(obj.sum(2, 3)) # Output: 5
+# Your code here
 ```
 
-## Package Contents
+## Documentation
 
-- **dummy_package.dummy_module.dummy_class.DummyClass**
-  A dummy class with a `sum(a, b)` method and example attributes.
+For detailed documentation, tutorials, and API reference, please visit:
 
-## Development
-
-To install development dependencies:
-
-```bash
-pip install -r requirements.txt
-```
+**https://fivedreg.readthedocs.io/**
 
 ## License
 
-This project is provided for demonstration purposes.
+MIT License
