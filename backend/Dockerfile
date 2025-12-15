@@ -8,10 +8,10 @@ COPY backend/requirements.txt .
 
 # Install dependencies
 RUN python -m pip install --no-cache-dir --upgrade pip && \
-    python -m pip install --no-cache-dir -r requirements.txt && \
+    python -m pip install --no-cache-dir -r requirements.txt
 
-    # Development stage
-    FROM base AS development
+# Development stage
+FROM base AS development
 COPY backend/main.py .
 EXPOSE 8000
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
@@ -24,8 +24,8 @@ RUN addgroup --system --gid 1001 appgroup && \
 
 COPY backend/main.py .
 
-# Change ownership of the app directory and package
-RUN chown -R appuser:appgroup /app /opt/fiveD_NN_package
+# Change ownership of the app directory
+RUN chown -R appuser:appgroup /app
 
 USER appuser
 
