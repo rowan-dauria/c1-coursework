@@ -4,4 +4,4 @@ from .data import DataLoader
 
 __version__ = version
 
-__all__ = ['LightweightNN', '__version__']
+__all__ = ['DataLoader', 'LightweightNN', '__version__']
