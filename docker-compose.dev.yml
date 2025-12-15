@@ -4,11 +4,17 @@ services:
     build:
       context: .
       dockerfile: ./backend/Dockerfile
-      target: production
-    # No volumes for production (code is baked in)
+      target: development
+    volumes:
+      - ./backend:/app
+      # Map package for editable install updates if needed
+      - ./fiveD_NN_package:/opt/fiveD_NN_package
+    # --reload = watches for code changes and reloads (live-reload)
+    # --host 0.0.0.0 = exposes it to other containers (and our port map)
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     ports:
       - "8000:8000"
-    # Command defined in Dockerfile (no reload)
+    working_dir: /app
     healthcheck:
       test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" ]
       interval: 30s
@@ -20,10 +26,14 @@ services:
   frontend:
     build:
       context: ./frontend
-      target: production
-    # No volumes for production
+      target: development
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev
     ports:
       - "3000:3000"
+    working_dir: /app
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8000
     depends_on:

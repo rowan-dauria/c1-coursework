@@ -1,29 +1,65 @@
-# Use Node.js LTS version as base image
-FROM node:22-alpine
+FROM node:22-alpine AS base
 
-# Set working directory
+# Install dependencies only when needed
+FROM base AS deps
+# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Set environment variables
-#! change to production for production
-ENV NODE_ENV=development
-
-# Copy package files
+# Install dependencies based on the preferred package manager
 COPY package.json package-lock.json* ./
+RUN npm ci
 
-# Install dependencies
-RUN npm install
-
-# Copy application code
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Expose port 3000 (default Next.js port)
+# Next.js updates environment variables during build
+ENV NODE_ENV=production
+RUN npm run build
+
+# Development stage
+FROM base AS development
+WORKDIR /app
+ENV NODE_ENV=development
+COPY package.json package-lock.json* ./
+RUN npm install
+COPY . .
+EXPOSE 3000
+CMD ["npm", "run", "dev"]
+
+# Production image, copy all the files and run next
+FROM base AS production
+WORKDIR /app
+
+ENV NODE_ENV=production
+# Uncomment the following line in case you want to disable telemetry during runtime.
+# ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# COPY --from=builder /app/public ./public
+
+# Set the correct permission for prerender cache
+RUN mkdir .next
+RUN chown nextjs:nodejs .next
+
+# Automatically leverage output traces to reduce image size
+# https://nextjs.org/docs/advanced-features/output-file-tracing
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+
 EXPOSE 3000
 
-# Health check configuration
-# Checks if the Next.js server is responding to HTTP requests
+ENV PORT=3000
+# server.js is created by next build from the standalone output
+# https://nextjs.org/docs/pages/api-reference/next-config-js/output
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1
 
-# Command to run the Next.js development server
-CMD ["npm", "run", "dev"] #! change to start for production
+CMD ["node", "server.js"]
