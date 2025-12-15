@@ -14,6 +14,8 @@ fivedreg is a lightweight neural network implementation using TensorFlow, design
    :maxdepth: 2
    :caption: Contents:
 
+   installation
+   user_guide
    api
    performance
 
