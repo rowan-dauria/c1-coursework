@@ -5,17 +5,13 @@ ENV PYTHONUNBUFFERED=1
 
 # Copy requirements and package
 COPY backend/requirements.txt .
-COPY fiveD_NN_package/ /opt/fiveD_NN_package/
 
 # Install dependencies
-# Set version for setuptools-scm since .git directory is not available in Docker build
-ENV SETUPTOOLS_SCM_PRETEND_VERSION_FOR_FIVEDREG=0.0.4.dev5
 RUN python -m pip install --no-cache-dir --upgrade pip && \
     python -m pip install --no-cache-dir -r requirements.txt && \
-    python -m pip install --no-cache-dir -e /opt/fiveD_NN_package
 
-# Development stage
-FROM base AS development
+    # Development stage
+    FROM base AS development
 COPY backend/main.py .
 EXPOSE 8000
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
