@@ -41,14 +41,6 @@ class TestLightweightNN:
         assert model.random_state == 42
         assert model.verbose == 1
 
-    def test_get_params(self):
-        """Test that get_params returns correct parameters."""
-        model = LightweightNN(hidden_layers=[64], learning_rate=0.01, random_state=42)
-        params = model.get_params()
-        assert params['hidden_layers'] == [64]
-        assert params['learning_rate'] == 0.01
-        assert params['random_state'] == 42
-
     def test_set_params(self):
         """Test that set_params updates parameters correctly."""
         model = LightweightNN()

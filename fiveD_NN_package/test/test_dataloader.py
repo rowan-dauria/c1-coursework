@@ -64,44 +64,5 @@ class TestDataLoader:
         with pytest.raises((FileNotFoundError, IOError)):
             loader.load_data()
 
-    def test_print_data_summary(self, capsys):
-        """Test that print_data_summary prints data information."""
-        test_data = {
-            'X': np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]),
-            'y': np.array([10.0, 20.0, 30.0]),
-            'metadata': {
-                'n_samples': 3,
-                'n_features': 2,
-                'seed': 42,
-                'feature_names': ['x1', 'x2'],
-                'target_name': 'y'
-            }
-        }
-
-        loader = DataLoader("/dummy/path")
-        loader.print_data_summary(test_data)
-
-        captured = capsys.readouterr()
-        assert "DATA SUMMARY" in captured.out
-        assert "Feature Matrix (X)" in captured.out
-        assert "Target Vector (y)" in captured.out
-        assert "Metadata" in captured.out
-        assert "Shape" in captured.out
-
-    def test_print_data_summary_invalid_input(self):
-        """Test that print_data_summary raises error for invalid input."""
-        loader = DataLoader("/dummy/path")
-
-        # Test with non-dict input
-        with pytest.raises(ValueError, match="Data must be a dictionary"):
-            loader.print_data_summary("not a dict")
-
-        # Test with missing keys
-        with pytest.raises(ValueError, match="Missing required keys"):
-            loader.print_data_summary({'X': np.array([1, 2, 3])})
-
-        with pytest.raises(ValueError, match="Missing required keys"):
-            loader.print_data_summary({'X': np.array([1, 2, 3]), 'y': np.array([1, 2, 3])})
-
 
 

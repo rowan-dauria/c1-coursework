@@ -356,25 +356,6 @@ class LightweightNN:
 
         return predictions
 
-    def get_params(self) -> dict:
-        """
-        Get model parameters.
-
-        Returns
-        -------
-        params : dict
-            Dictionary of model parameters.
-        """
-        return {
-            'hidden_layers': self.hidden_layers,
-            'learning_rate': self.learning_rate,
-            'max_iter': self.max_iter,
-            'activation': self.activation,
-            'output_activation': self.output_activation,
-            'random_state': self.random_state,
-            'verbose': self.verbose
-        }
-
     def set_params(self, **params):
         """
         Set model parameters.

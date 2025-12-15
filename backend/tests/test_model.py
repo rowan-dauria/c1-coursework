@@ -64,7 +64,8 @@ class TestModelInitialization:
         pred1 = model1.predict(X[:5])
 
         # Reset and create new model with same seed
-        fivedreg.neural_network.NN.reset_keras()
+        from keras.backend import clear_session
+        clear_session()
 
         model2 = LightweightNN(random_state=42, max_iter=5, verbose=0)
         model2.fit(X, y)
@@ -72,24 +73,6 @@ class TestModelInitialization:
 
         # Predictions should be very close (may not be exact due to TF)
         np.testing.assert_array_almost_equal(pred1, pred2, decimal=3)
-
-    def test_get_params(self):
-        """Test get_params returns correct dictionary."""
-        model = LightweightNN(
-            hidden_layers=[32, 16],
-            learning_rate=0.005,
-            max_iter=200,
-            activation='sigmoid',
-            random_state=123
-        )
-
-        params = model.get_params()
-
-        assert params['hidden_layers'] == [32, 16]
-        assert params['learning_rate'] == 0.005
-        assert params['max_iter'] == 200
-        assert params['activation'] == 'sigmoid'
-        assert params['random_state'] == 123
 
     def test_set_params(self):
         """Test set_params updates model parameters."""
