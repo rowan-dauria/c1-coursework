@@ -63,7 +63,7 @@ async def upload_file(file: UploadFile = File(...)):
     return {"message": "File uploaded successfully", "data_summary": data_summary}
 
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List
 
 # ... (existing imports)
 
@@ -77,6 +77,12 @@ class TrainRequest(BaseModel):
 
 @app.post("/train")
 async def train(request: TrainRequest):
+    try:
+        fivedreg.neural_network.NN.reset_keras()
+    except Exception as e:
+        logging.error(f"Error resetting Keras session: {e}")
+        raise HTTPException(status_code=500, detail=f"Error resetting Keras session: {e}")
+
     logging.info(f"Train endpoint called with params: {request.dict()}")
     # error handling for file not found
     if not os.path.exists("data/data.pkl"):

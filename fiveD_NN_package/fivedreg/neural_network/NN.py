@@ -8,6 +8,13 @@ import pandas as pd
 import keras
 import tensorflow as tf
 from typing import Union, List, Optional
+from keras.backend import clear_session
+
+def reset_keras():
+    """
+    Reset the Keras session to clear memory and avoid memory leaks.
+    """
+    clear_session()
 
 
 class LightweightNN:
