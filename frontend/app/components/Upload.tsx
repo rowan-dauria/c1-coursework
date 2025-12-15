@@ -71,151 +71,146 @@ const Upload = () => {
             }}>
                 {dataSummary ? (
                     <div style={{ animation: 'fadeIn 0.4s ease forwards' }}>
-                        <div style={{ marginBottom: '1.5rem' }}>
-                            <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.5rem',
-                                marginBottom: '1rem'
-                            }}>
-                                <span style={{
-                                    width: '8px',
-                                    height: '8px',
-                                    borderRadius: '50%',
-                                    background: 'var(--accent-success)',
-                                    boxShadow: '0 0 8px var(--accent-success)'
-                                }}></span>
-                                <span style={{
-                                    fontFamily: "'JetBrains Mono', monospace",
-                                    fontSize: '0.75rem',
-                                    color: 'var(--accent-success)',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.1em'
-                                }}>Dataset Loaded</span>
-                            </div>
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            marginBottom: '1rem'
+                        }}>
+                            <span style={{
+                                width: '8px',
+                                height: '8px',
+                                borderRadius: '50%',
+                                background: 'var(--accent-success)',
+                                boxShadow: '0 0 8px var(--accent-success)'
+                            }}></span>
+                            <span style={{
+                                fontFamily: "'JetBrains Mono', monospace",
+                                fontSize: '0.75rem',
+                                color: 'var(--accent-success)',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.1em'
+                            }}>Dataset Loaded</span>
                         </div>
 
                         {/* Metadata Section */}
-                        <div style={{ marginBottom: '1.5rem' }}>
-                            <div className="data-label">Metadata</div>
+                        <div style={{ marginBottom: '1rem' }}>
+                            <div className="data-label" style={{ marginBottom: '0.4rem' }}>Metadata</div>
                             <div style={{
                                 display: 'grid',
                                 gridTemplateColumns: 'repeat(3, 1fr)',
-                                gap: '0.75rem',
-                                marginTop: '0.5rem'
+                                gap: '0.5rem'
                             }}>
                                 <div style={{
                                     background: 'rgba(6, 182, 212, 0.1)',
                                     borderRadius: 'var(--radius-md)',
-                                    padding: '0.75rem',
+                                    padding: '0.6rem 0.5rem',
                                     textAlign: 'center'
                                 }}>
                                     <div style={{
                                         fontFamily: "'JetBrains Mono', monospace",
-                                        fontSize: '1.25rem',
+                                        fontSize: '1.1rem',
                                         fontWeight: '600',
                                         color: 'var(--accent-primary)'
                                     }}>{dataSummary.metadata.n_samples.toLocaleString()}</div>
                                     <div style={{
-                                        fontSize: '0.65rem',
+                                        fontSize: '0.6rem',
                                         color: 'var(--text-muted)',
                                         textTransform: 'uppercase',
-                                        marginTop: '0.25rem'
+                                        marginTop: '0.15rem'
                                     }}>Samples</div>
                                 </div>
                                 <div style={{
                                     background: 'rgba(139, 92, 246, 0.1)',
                                     borderRadius: 'var(--radius-md)',
-                                    padding: '0.75rem',
+                                    padding: '0.6rem 0.5rem',
                                     textAlign: 'center'
                                 }}>
                                     <div style={{
                                         fontFamily: "'JetBrains Mono', monospace",
-                                        fontSize: '1.25rem',
+                                        fontSize: '1.1rem',
                                         fontWeight: '600',
                                         color: 'var(--accent-secondary)'
                                     }}>{dataSummary.metadata.n_features}</div>
                                     <div style={{
-                                        fontSize: '0.65rem',
+                                        fontSize: '0.6rem',
                                         color: 'var(--text-muted)',
                                         textTransform: 'uppercase',
-                                        marginTop: '0.25rem'
+                                        marginTop: '0.15rem'
                                     }}>Features</div>
                                 </div>
                                 <div style={{
                                     background: 'rgba(16, 185, 129, 0.1)',
                                     borderRadius: 'var(--radius-md)',
-                                    padding: '0.75rem',
+                                    padding: '0.6rem 0.5rem',
                                     textAlign: 'center'
                                 }}>
                                     <div style={{
                                         fontFamily: "'JetBrains Mono', monospace",
-                                        fontSize: '1.25rem',
+                                        fontSize: '1.1rem',
                                         fontWeight: '600',
                                         color: 'var(--accent-success)'
                                     }}>{dataSummary.metadata.target_name}</div>
                                     <div style={{
-                                        fontSize: '0.65rem',
+                                        fontSize: '0.6rem',
                                         color: 'var(--text-muted)',
                                         textTransform: 'uppercase',
-                                        marginTop: '0.25rem'
+                                        marginTop: '0.15rem'
                                     }}>Target</div>
                                 </div>
                             </div>
                         </div>
 
                         {/* Feature Matrix Section */}
-                        <div style={{ marginBottom: '1.5rem' }}>
-                            <div className="data-label">Feature Matrix</div>
+                        <div style={{ marginBottom: '1rem' }}>
+                            <div className="data-label" style={{ marginBottom: '0.4rem' }}>Feature Matrix</div>
                             <div style={{
                                 display: 'grid',
                                 gridTemplateColumns: 'repeat(2, 1fr)',
-                                gap: '0.5rem',
-                                marginTop: '0.5rem'
+                                gap: '0.4rem'
                             }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-sm)' }}>
-                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Shape</span>
-                                    <span className="data-value">{dataSummary.feature_matrix.shape.join(' × ')}</span>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0.6rem', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-sm)' }}>
+                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>Shape</span>
+                                    <span className="data-value" style={{ fontSize: '0.85rem' }}>{dataSummary.feature_matrix.shape.join(' × ')}</span>
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-sm)' }}>
-                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Type</span>
-                                    <span className="data-value">{dataSummary.feature_matrix.dtype}</span>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0.6rem', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-sm)' }}>
+                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>Type</span>
+                                    <span className="data-value" style={{ fontSize: '0.85rem' }}>{dataSummary.feature_matrix.dtype}</span>
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-sm)' }}>
-                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Min</span>
-                                    <span className="data-value">{(typeof dataSummary.feature_matrix.min === 'object' ? dataSummary.feature_matrix.min.parsedValue : dataSummary.feature_matrix.min).toFixed(4)}</span>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0.6rem', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-sm)' }}>
+                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>Min</span>
+                                    <span className="data-value" style={{ fontSize: '0.85rem' }}>{(typeof dataSummary.feature_matrix.min === 'object' ? dataSummary.feature_matrix.min.parsedValue : dataSummary.feature_matrix.min).toFixed(4)}</span>
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-sm)' }}>
-                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Max</span>
-                                    <span className="data-value">{dataSummary.feature_matrix.max.toFixed(4)}</span>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0.6rem', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-sm)' }}>
+                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>Max</span>
+                                    <span className="data-value" style={{ fontSize: '0.85rem' }}>{dataSummary.feature_matrix.max.toFixed(4)}</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Target Vector Section */}
                         <div>
-                            <div className="data-label">Target Vector</div>
+                            <div className="data-label" style={{ marginBottom: '0.4rem' }}>Target Vector</div>
                             <div style={{
                                 display: 'grid',
                                 gridTemplateColumns: 'repeat(2, 1fr)',
-                                gap: '0.5rem',
-                                marginTop: '0.5rem'
+                                gap: '0.4rem'
                             }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-sm)' }}>
-                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Shape</span>
-                                    <span className="data-value">{dataSummary.target_vector.shape[0].toLocaleString()}</span>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0.6rem', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-sm)' }}>
+                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>Shape</span>
+                                    <span className="data-value" style={{ fontSize: '0.85rem' }}>{dataSummary.target_vector.shape[0].toLocaleString()}</span>
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-sm)' }}>
-                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Type</span>
-                                    <span className="data-value">{dataSummary.target_vector.dtype}</span>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0.6rem', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-sm)' }}>
+                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>Type</span>
+                                    <span className="data-value" style={{ fontSize: '0.85rem' }}>{dataSummary.target_vector.dtype}</span>
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-sm)' }}>
-                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Range</span>
-                                    <span className="data-value">[{dataSummary.target_vector.min.toFixed(2)}, {dataSummary.target_vector.max.toFixed(2)}]</span>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0.6rem', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-sm)' }}>
+                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>Range</span>
+                                    <span className="data-value" style={{ fontSize: '0.85rem' }}>[{dataSummary.target_vector.min.toFixed(2)}, {dataSummary.target_vector.max.toFixed(2)}]</span>
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-sm)' }}>
-                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Mean</span>
-                                    <span className="data-value">{dataSummary.target_vector.mean.toFixed(4)}</span>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0.6rem', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-sm)' }}>
+                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>Mean</span>
+                                    <span className="data-value" style={{ fontSize: '0.85rem' }}>{dataSummary.target_vector.mean.toFixed(4)}</span>
                                 </div>
                             </div>
                         </div>

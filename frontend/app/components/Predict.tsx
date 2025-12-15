@@ -84,14 +84,25 @@ const Predict = () => {
                             }}>
                                 {featureLabels[index]}
                             </label>
-                            <input
-                                name={key}
-                                type="number"
-                                step="0.01"
-                                onChange={handleInputChange}
-                                className="form-input"
-                                placeholder="0.00"
-                            />
+                            <div className="number-input-wrapper">
+                                <input
+                                    name={key}
+                                    type="number"
+                                    step="0.01"
+                                    value={inputs[key as keyof typeof inputs]}
+                                    onChange={handleInputChange}
+                                    className="form-input"
+                                    placeholder="0.00"
+                                />
+                                <div className="spin-buttons">
+                                    <button type="button" className="spin-btn" onClick={() => setInputs(prev => ({ ...prev, [key]: Math.round((prev[key as keyof typeof inputs] + 0.1) * 100) / 100 }))}>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 15l-6-6-6 6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                    </button>
+                                    <button type="button" className="spin-btn" onClick={() => setInputs(prev => ({ ...prev, [key]: Math.round((prev[key as keyof typeof inputs] - 0.1) * 100) / 100 }))}>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     ))}
                 </div>

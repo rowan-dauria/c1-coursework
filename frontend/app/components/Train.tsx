@@ -6,6 +6,7 @@ const Train = () => {
     const [isTraining, setIsTraining] = useState<boolean>(false);
     const [modelStructure, setModelStructure] = useState<any[]>([]);
     const [trainingMetrics, setTrainingMetrics] = useState<any>(null);
+    const [trainingHistory, setTrainingHistory] = useState<{ loss: number; mae: number; val_loss?: number; val_mae?: number } | null>(null);
     const [maxIter, setMaxIter] = useState<number>(100);
     const [learningRate, setLearningRate] = useState<number>(0.001);
     const [activation, setActivation] = useState<string>("relu");
@@ -54,6 +55,30 @@ const Train = () => {
             if (data.metrics) {
                 setTrainingMetrics(data.metrics);
             }
+
+            // Fetch training history to get final metrics
+            try {
+                const historyResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/history`);
+                if (historyResponse.ok) {
+                    const historyData = await historyResponse.json();
+                    const history = historyData.history;
+                    if (history) {
+                        const finalMetrics: { loss: number; mae: number; val_loss?: number; val_mae?: number } = {
+                            loss: history.loss?.[history.loss.length - 1] ?? 0,
+                            mae: history.mae?.[history.mae.length - 1] ?? 0,
+                        };
+                        if (history.val_loss) {
+                            finalMetrics.val_loss = history.val_loss[history.val_loss.length - 1];
+                        }
+                        if (history.val_mae) {
+                            finalMetrics.val_mae = history.val_mae[history.val_mae.length - 1];
+                        }
+                        setTrainingHistory(finalMetrics);
+                    }
+                }
+            } catch (historyError) {
+                console.error("Error fetching history:", historyError);
+            }
         } catch (error) {
             console.error(error);
             setTrainStatus(`error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -96,24 +121,47 @@ const Train = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
                     <div>
                         <label className="form-label">Max Iterations</label>
-                        <input
-                            type="number"
-                            value={maxIter}
-                            onChange={(e) => setMaxIter(parseInt(e.target.value) || 100)}
-                            min="1"
-                            className="form-input"
-                        />
+                        <div className="number-input-wrapper">
+                            <input
+                                type="number"
+                                value={maxIter}
+                                onChange={(e) => setMaxIter(parseInt(e.target.value) || 100)}
+                                min="1"
+                                className="form-input"
+                            />
+                            <div className="spin-buttons">
+                                <button type="button" className="spin-btn" onClick={() => setMaxIter(prev => prev + 10)}>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 15l-6-6-6 6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                </button>
+                                <button type="button" className="spin-btn" onClick={() => setMaxIter(prev => Math.max(1, prev - 10))}>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div>
                         <label className="form-label">Learning Rate</label>
-                        <input
-                            type="number"
-                            value={learningRate}
-                            onChange={(e) => setLearningRate(parseFloat(e.target.value) || 0.001)}
-                            min="0.0001"
-                            step="0.0001"
-                            className="form-input"
-                        />
+                        <div className="number-input-wrapper">
+                            <input
+                                type="number"
+                                value={learningRate}
+                                onChange={(e) => {
+                                    const value = parseFloat(e.target.value);
+                                    setLearningRate(isNaN(value) ? 0.001 : value);
+                                }}
+                                min="0.0001"
+                                step="0.0001"
+                                className="form-input"
+                            />
+                            <div className="spin-buttons">
+                                <button type="button" className="spin-btn" onClick={() => setLearningRate(prev => Math.round((prev + 0.001) * 10000) / 10000)}>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 15l-6-6-6 6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                </button>
+                                <button type="button" className="spin-btn" onClick={() => setLearningRate(prev => Math.max(0.0001, Math.round((prev - 0.001) * 10000) / 10000))}>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div>
                         <label className="form-label">Activation</label>
@@ -147,7 +195,9 @@ const Train = () => {
             <div className="inner-panel" style={{
                 flex: 1,
                 marginBottom: '1rem',
-                overflowY: 'auto'
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center'
             }}>
                 {modelStructure.length > 0 ? (
                     <div style={{ animation: 'fadeIn 0.4s ease forwards' }}>
@@ -155,7 +205,7 @@ const Train = () => {
                             display: 'flex',
                             alignItems: 'center',
                             gap: '0.5rem',
-                            marginBottom: '1rem'
+                            marginBottom: '1.5rem'
                         }}>
                             <span style={{
                                 width: '8px',
@@ -173,48 +223,134 @@ const Train = () => {
                             }}>Model Trained</span>
                         </div>
 
-                        <table className="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Layer</th>
-                                    <th>Shape</th>
-                                    <th>Params</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {modelStructure.map((layer, index) => (
-                                    <tr key={index}>
-                                        <td>{layer.name}</td>
-                                        <td>{layer.output_shape}</td>
-                                        <td>{layer.params.toLocaleString()}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-
-                        {trainingMetrics && (
+                        {/* Trainable Params - Full Width */}
+                        <div style={{
+                            padding: '0.75rem 1rem',
+                            background: 'rgba(255,255,255,0.02)',
+                            borderRadius: 'var(--radius-sm)',
+                            border: '1px solid var(--border-color)',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginBottom: '0.75rem'
+                        }}>
                             <div style={{
-                                marginTop: '1rem',
-                                paddingTop: '1rem',
-                                borderTop: '1px solid var(--border-color)'
+                                fontFamily: "'JetBrains Mono', monospace",
+                                fontSize: '0.65rem',
+                                color: 'var(--text-muted)',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.05em'
+                            }}>Trainable Parameters</div>
+                            <div style={{
+                                fontFamily: "'JetBrains Mono', monospace",
+                                fontSize: '1.1rem',
+                                fontWeight: '600',
+                                color: 'var(--accent-primary)'
+                            }}>{modelStructure.reduce((sum, layer) => sum + layer.params, 0).toLocaleString()}</div>
+                        </div>
+
+                        {/* Metrics Grid */}
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(2, 1fr)',
+                            gap: '0.5rem'
+                        }}>
+                            {/* Train MSE */}
+                            <div style={{
+                                padding: '0.75rem',
+                                background: 'rgba(255,255,255,0.02)',
+                                borderRadius: 'var(--radius-sm)',
+                                border: '1px solid var(--border-color)',
+                                textAlign: 'center'
                             }}>
-                                <div className="data-label" style={{ marginBottom: '0.5rem' }}>Metrics</div>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
-                                    {Object.entries(trainingMetrics).map(([key, value]) => (
-                                        <div key={key} style={{
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            padding: '0.5rem',
-                                            background: 'rgba(255,255,255,0.02)',
-                                            borderRadius: 'var(--radius-sm)'
-                                        }}>
-                                            <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>{key}</span>
-                                            <span className="data-value">{typeof value === 'number' ? value.toFixed(4) : String(value)}</span>
-                                        </div>
-                                    ))}
-                                </div>
+                                <div style={{
+                                    fontFamily: "'JetBrains Mono', monospace",
+                                    fontSize: '0.6rem',
+                                    color: 'var(--text-muted)',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.05em',
+                                    marginBottom: '0.35rem'
+                                }}>Train MSE</div>
+                                <div style={{
+                                    fontFamily: "'JetBrains Mono', monospace",
+                                    fontSize: '1rem',
+                                    fontWeight: '600',
+                                    color: 'var(--accent-primary)'
+                                }}>{trainingHistory ? trainingHistory.loss.toExponential(2) : '—'}</div>
                             </div>
-                        )}
+
+                            {/* Val MSE */}
+                            <div style={{
+                                padding: '0.75rem',
+                                background: 'rgba(255,255,255,0.02)',
+                                borderRadius: 'var(--radius-sm)',
+                                border: '1px solid var(--border-color)',
+                                textAlign: 'center'
+                            }}>
+                                <div style={{
+                                    fontFamily: "'JetBrains Mono', monospace",
+                                    fontSize: '0.6rem',
+                                    color: 'var(--text-muted)',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.05em',
+                                    marginBottom: '0.35rem'
+                                }}>Val MSE</div>
+                                <div style={{
+                                    fontFamily: "'JetBrains Mono', monospace",
+                                    fontSize: '1rem',
+                                    fontWeight: '600',
+                                    color: 'var(--accent-secondary, var(--accent-primary))'
+                                }}>{trainingHistory?.val_loss ? trainingHistory.val_loss.toExponential(2) : '—'}</div>
+                            </div>
+
+                            {/* Train MAE */}
+                            <div style={{
+                                padding: '0.75rem',
+                                background: 'rgba(255,255,255,0.02)',
+                                borderRadius: 'var(--radius-sm)',
+                                border: '1px solid var(--border-color)',
+                                textAlign: 'center'
+                            }}>
+                                <div style={{
+                                    fontFamily: "'JetBrains Mono', monospace",
+                                    fontSize: '0.6rem',
+                                    color: 'var(--text-muted)',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.05em',
+                                    marginBottom: '0.35rem'
+                                }}>Train MAE</div>
+                                <div style={{
+                                    fontFamily: "'JetBrains Mono', monospace",
+                                    fontSize: '1rem',
+                                    fontWeight: '600',
+                                    color: 'var(--accent-primary)'
+                                }}>{trainingHistory ? trainingHistory.mae.toExponential(2) : '—'}</div>
+                            </div>
+
+                            {/* Val MAE */}
+                            <div style={{
+                                padding: '0.75rem',
+                                background: 'rgba(255,255,255,0.02)',
+                                borderRadius: 'var(--radius-sm)',
+                                border: '1px solid var(--border-color)',
+                                textAlign: 'center'
+                            }}>
+                                <div style={{
+                                    fontFamily: "'JetBrains Mono', monospace",
+                                    fontSize: '0.6rem',
+                                    color: 'var(--text-muted)',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.05em',
+                                    marginBottom: '0.35rem'
+                                }}>Val MAE</div>
+                                <div style={{
+                                    fontFamily: "'JetBrains Mono', monospace",
+                                    fontSize: '1rem',
+                                    fontWeight: '600',
+                                    color: 'var(--accent-secondary, var(--accent-primary))'
+                                }}>{trainingHistory?.val_mae ? trainingHistory.val_mae.toExponential(2) : '—'}</div>
+                            </div>
+                        </div>
                     </div>
                 ) : trainStatus.startsWith('error') ? (
                     <div style={{

@@ -146,6 +146,75 @@ body {
   color: var(--text-muted);
 }
 
+/* Number input spinner styling */
+.form-input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.form-input[type="number"]::-webkit-outer-spin-button,
+.form-input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+/* Custom number input wrapper for styled controls */
+.number-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+}
+
+.number-input-wrapper .form-input {
+  padding-right: 2.5rem;
+}
+
+.number-input-wrapper .spin-buttons {
+  position: absolute;
+  right: 1px;
+  top: 1px;
+  bottom: 1px;
+  display: flex;
+  flex-direction: column;
+  width: 1.75rem;
+  border-left: 1px solid var(--border-color);
+  border-radius: 0 calc(var(--radius-md) - 1px) calc(var(--radius-md) - 1px) 0;
+  overflow: hidden;
+}
+
+.number-input-wrapper .spin-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.number-input-wrapper .spin-btn:first-child {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.number-input-wrapper .spin-btn:hover {
+  background: rgba(6, 182, 212, 0.15);
+  color: var(--accent-primary);
+}
+
+.number-input-wrapper .spin-btn:active {
+  background: rgba(6, 182, 212, 0.25);
+}
+
+.number-input-wrapper .spin-btn svg {
+  width: 10px;
+  height: 10px;
+  stroke-width: 2.5;
+}
+
 .form-select {
   width: 100%;
   padding: 0.75rem 1rem;
