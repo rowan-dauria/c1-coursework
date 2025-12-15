@@ -24,7 +24,7 @@ from fivedreg import LightweightNN, DataLoader
 
 For detailed documentation, tutorials, and API reference, please visit:
 
-**https://fivedreg.readthedocs.io/**
+**https://c1-coursework-docs.readthedocs.io/en/latest/**
 
 ## License
 
