@@ -5,8 +5,9 @@ log() {
     echo "$(date +'%Y-%m-%d %H:%M:%S') - $1"
 }
 
-# Default to detached mode
+# Default to detached mode and production compose file
 DETACHED="-d"
+COMPOSE_FILE="docker-compose.yml"
 
 # Parse arguments
 for arg in "$@"
@@ -14,6 +15,7 @@ do
     case $arg in
         -d|--dev)
         DETACHED=""
+        COMPOSE_FILE="docker-compose.dev.yml"
         shift # Remove --dev from processing
         ;;
     esac
@@ -25,6 +27,8 @@ else
     log "Starting in BACKGROUND mode..."
 fi
 
-docker compose up --build $DETACHED
+log "Using compose file: $COMPOSE_FILE"
+
+docker compose -f $COMPOSE_FILE up --build $DETACHED
 
 log "Startup command executed."
