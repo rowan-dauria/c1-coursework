@@ -10,11 +10,7 @@ import tensorflow as tf
 from typing import Union, List, Optional
 from keras.backend import clear_session
 
-def reset_keras():
-    """
-    Reset the Keras session to clear memory and avoid memory leaks.
-    """
-    clear_session()
+
 
 
 class LightweightNN:
@@ -100,6 +96,13 @@ class LightweightNN:
         if self.random_state is not None:
             np.random.seed(self.random_state)
             tf.random.set_seed(self.random_state)
+
+    def reset_keras(self):
+        """
+        Reset the Keras session to clear memory and avoid memory leaks.
+        """
+        clear_session()
+        self._is_fitted_ = False
 
     def _build_model(self, input_dim: int, output_dim: int):
         """
@@ -191,7 +194,13 @@ class LightweightNN:
 
         return X_array, None
 
-    def fit(self, X: Union[pd.DataFrame, np.ndarray], y: Union[pd.DataFrame, np.ndarray], early_stopping: bool = True):
+    def fit(
+        self,
+        X: Union[pd.DataFrame, np.ndarray],
+        y: Union[pd.DataFrame, np.ndarray],
+        early_stopping: bool = True,
+        vs: Optional[float] = None
+    ) -> 'LightweightNN':
         """
         Train the neural network on the provided data.
 
@@ -205,6 +214,9 @@ class LightweightNN:
         early_stopping : bool, default=True
             Whether to use early stopping during training. If True, training will
             stop early if the loss does not improve for a certain number of epochs.
+        vs : float, optional, default=None
+            Validation split ratio. If None, no validation split is performed.
+            If a float, indicates the proportion of data to use for validation (must be < 1.0).
 
         Returns
         -------
@@ -223,7 +235,16 @@ class LightweightNN:
         >>> model.fit(X, y)
         >>> # Disable early stopping
         >>> model.fit(X, y, early_stopping=False)
+        >>> # Use validation split
+        >>> model.fit(X, y, vs=0.2)
         """
+        # Validate vs parameter
+        if vs is not None:
+            if not isinstance(vs, (int, float)):
+                raise TypeError(f"vs must be a float or None, got {type(vs)}")
+            if vs >= 1.0 or vs <= 0.0:
+                raise ValueError(f"vs must be between 0.0 and 1.0, got {vs}")
+
         # Prepare data
         X_array, y_array = self._prepare_data(X, y)
 
@@ -239,8 +260,10 @@ class LightweightNN:
 
         # Early stopping for efficiency (optional, but helps prevent overfitting)
         if early_stopping:
+            # Use validation loss for monitoring if validation split is enabled
+            monitor = 'val_loss' if vs is not None else 'loss'
             early_stopping_callback = keras.callbacks.EarlyStopping(
-                monitor='loss',
+                monitor=monitor,
                 patience=min(50, self.max_iter // 10),  # Adaptive patience
                 restore_best_weights=False,
                 verbose=0
@@ -252,6 +275,9 @@ class LightweightNN:
         batch_size = min(32, len(X_array))
         batch_size = max(1, batch_size)  # Ensure at least 1
 
+        # Set validation split
+        validation_split = vs if vs is not None else 0.0
+
         self.history_ = self.model.fit(
             X_array,
             y_array,
@@ -260,7 +286,7 @@ class LightweightNN:
             verbose=self.verbose,
             callbacks=callbacks,
             shuffle=True,
-            validation_split=0.0  # No validation split for speed
+            validation_split=validation_split
         )
 
         self.is_fitted_ = True

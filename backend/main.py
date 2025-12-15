@@ -78,7 +78,7 @@ class TrainRequest(BaseModel):
 @app.post("/train")
 async def train(request: TrainRequest):
     try:
-        fivedreg.neural_network.NN.reset_keras()
+        model.reset_keras()
     except Exception as e:
         logging.error(f"Error resetting Keras session: {e}")
         raise HTTPException(status_code=500, detail=f"Error resetting Keras session: {e}")
@@ -98,7 +98,7 @@ async def train(request: TrainRequest):
         model.set_params(**request.model_dump())
 
         logging.info("Starting model training")
-        model.fit(dataset['X'], dataset['y'])
+        model.fit(dataset['X'], dataset['y'], vs=0.2)
 
         logging.info("Model training completed successfully")
 
@@ -129,6 +129,44 @@ async def get_version():
     Returns the current version of the fiveD_NN_package.
     """
     return {"version": fivedreg.__version__}
+
+
+@app.get("/history")
+async def get_history():
+    """
+    Returns the training history if the model has been fitted.
+    """
+    try:
+        if not model.is_fitted_:
+            raise HTTPException(
+                status_code=404,
+                detail="Model has not been fitted yet. Please train the model first."
+            )
+
+        history = model.get_history()
+
+        # Convert Keras history to JSON-serializable format
+        # history.history is a dict with metric names as keys and lists of values as values
+        history_dict = {}
+        if hasattr(history, 'history') and history.history:
+            for metric_name, values in history.history.items():
+                # Convert to Python list, handling numpy arrays and ensuring all values are JSON-serializable
+                if hasattr(values, 'tolist'):
+                    # numpy array
+                    history_dict[metric_name] = values.tolist()
+                else:
+                    # Already a list, but ensure all values are Python types
+                    history_dict[metric_name] = [float(v) for v in values]
+
+        return {
+            "message": "Training history retrieved successfully",
+            "history": history_dict
+        }
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logging.error(f"Error retrieving training history: {e}")
+        raise HTTPException(status_code=500, detail=f"Error retrieving training history: {e}")
 
 
 @app.post("/predict")
