@@ -1,5 +1,33 @@
 # c1-coursework
 
+## Quickstart
+
+### Starting the Application
+
+Use the provided helper script to start the application with Docker Compose.
+
+**Normal Start (Detached Mode):**
+Runs containers in the background.
+
+```bash
+./start.sh
+```
+
+**Developer Mode (Attached Mode):**
+Runs containers in the foreground with live logs visible in your terminal.
+
+```bash
+./start.sh --dev
+```
+
+### Stopping the Application
+
+Stops all container services and performs a comprehensive cleanup (removes containers, volumes, networks, and unused data).
+
+```bash
+./stop.sh
+```
+
 ## Running Tests
 
 ### Prerequisites
