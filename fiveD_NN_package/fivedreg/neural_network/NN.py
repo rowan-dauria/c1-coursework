@@ -184,7 +184,7 @@ class LightweightNN:
 
         return X_array, None
 
-    def fit(self, X: Union[pd.DataFrame, np.ndarray], y: Union[pd.DataFrame, np.ndarray]):
+    def fit(self, X: Union[pd.DataFrame, np.ndarray], y: Union[pd.DataFrame, np.ndarray], early_stopping: bool = True):
         """
         Train the neural network on the provided data.
 
@@ -195,6 +195,9 @@ class LightweightNN:
             For 5D_NN package, this should be 5 features.
         y : pd.DataFrame or np.ndarray
             Training target values (n_samples, n_outputs).
+        early_stopping : bool, default=True
+            Whether to use early stopping during training. If True, training will
+            stop early if the loss does not improve for a certain number of epochs.
 
         Returns
         -------
@@ -211,6 +214,8 @@ class LightweightNN:
         >>> y = pd.DataFrame(np.random.randn(1000, 1))
         >>> model = LightweightNN(max_iter=500)
         >>> model.fit(X, y)
+        >>> # Disable early stopping
+        >>> model.fit(X, y, early_stopping=False)
         """
         # Prepare data
         X_array, y_array = self._prepare_data(X, y)
@@ -226,13 +231,14 @@ class LightweightNN:
         callbacks = []
 
         # Early stopping for efficiency (optional, but helps prevent overfitting)
-        early_stopping = keras.callbacks.EarlyStopping(
-            monitor='loss',
-            patience=min(50, self.max_iter // 10),  # Adaptive patience
-            restore_best_weights=False,
-            verbose=0
-        )
-        callbacks.append(early_stopping)
+        if early_stopping:
+            early_stopping_callback = keras.callbacks.EarlyStopping(
+                monitor='loss',
+                patience=min(50, self.max_iter // 10),  # Adaptive patience
+                restore_best_weights=False,
+                verbose=0
+            )
+            callbacks.append(early_stopping_callback)
 
         # Train model with optimized settings
         # Adaptive batch size: use 32 for larger datasets, adjust for smaller datasets

@@ -39,44 +39,44 @@ Benchmark Results
      - R²
    * - 100
      - 1
-     - 4.75
-     - 3.11
-     - 0.53
-     - 3.54
-     - -6.37
+     - 0.51
+     - 25.70
+     - 1.09
+     - 5.53
+     - -10.52
    * - 1,000
      - 1
-     - 7.42
-     - 6.58
-     - 1.13
-     - 2.02
-     - -2.41
+     - 0.48
+     - 8.48
+     - 1.58
+     - 2.35
+     - -2.97
    * - 2,500
      - 1
-     - 13.72
-     - 4.03
-     - —
+     - 0.51
+     - 5.89
+     - 1.27
      - 0.20
-     - 0.65
+     - 0.64
    * - 5,000
      - 1
-     - 21.32
-     - 3.36
-     - 0.86
-     - 0.12
-     - 0.78
+     - 0.51
+     - 3.97
+     - 2.03
+     - 0.17
+     - 0.69
    * - 7,500
      - 1
-     - 30.39
-     - 3.98
-     - 1.11
-     - 0.09
-     - 0.83
+     - 0.55
+     - 4.34
+     - 1.64
+     - 0.13
+     - 0.77
    * - 10,000
      - 1
-     - 37.85
-     - 3.27
-     - 1.17
+     - 0.55
+     - 4.16
+     - 1.61
      - 0.03
      - 0.94
 
@@ -96,51 +96,52 @@ Visualizations
 Key Findings
 ------------
 
-Training Time Scaling
+Training Time Performance
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Training time remains **remarkably constant** across all dataset sizes, averaging approximately **0.5 seconds**:
+
+- 100 samples: ~0.51 seconds
+- 10,000 samples: ~0.55 seconds
+
+This near-constant training time demonstrates excellent scalability of the ``LightweightNN`` implementation,
+with TensorFlow efficiently handling batch operations regardless of dataset size within this range.
+
+Memory Usage Patterns
 ^^^^^^^^^^^^^^^^^^^^^
 
-Training time exhibits **approximately linear scaling** with dataset size. For the tested range:
+Memory consumption shows an interesting pattern:
 
-- 100 samples: ~4.7 seconds
-- 10,000 samples: ~37.8 seconds
+- **Training memory**: Higher for small datasets (25.7 MiB at 100 samples), decreasing and stabilizing at 4–6 MiB for larger datasets (2,500+ samples)
+- **Prediction memory**: Consistent at approximately 1–2 MiB across all dataset sizes
 
-This linear relationship indicates efficient batch processing in the underlying TensorFlow implementation.
-
-Memory Efficiency
-^^^^^^^^^^^^^^^^^
-
-Memory consumption remains **remarkably stable** across all dataset sizes:
-
-- Training memory: 3–7 MiB (relatively constant)
-- Prediction memory: ~0.5–1.2 MiB
-
-The consistent memory footprint suggests that the ``LightweightNN`` class effectively manages memory regardless of input size,
-making it suitable for resource-constrained environments.
+The elevated memory usage for small datasets is likely due to fixed TensorFlow overhead representing a larger proportion of total memory.
+As dataset size increases, this overhead is amortized, resulting in more efficient memory utilization.
 
 Model Accuracy
 ^^^^^^^^^^^^^^
 
 Model performance improves significantly with larger datasets:
 
-- **Small datasets (100–1,000 samples)**: Poor fit with negative R² scores, indicating the model underperforms compared to a mean baseline.
-  This is expected given the complexity of the polynomial target function.
+- **Small datasets (100–1,000 samples)**: Poor fit with negative R² scores (-10.52 to -2.97), indicating the model underperforms compared to a mean baseline.
+  This is expected given the complexity of the polynomial target function and insufficient training data.
 
-- **Medium datasets (2,500–5,000 samples)**: Acceptable fit with R² between 0.65–0.78.
+- **Medium datasets (2,500–5,000 samples)**: Acceptable fit with R² between 0.64–0.69.
 
-- **Large datasets (7,500–10,000 samples)**: Strong fit with R² approaching 0.94 and MSE dropping to 0.03.
+- **Large datasets (7,500–10,000 samples)**: Strong fit with R² reaching 0.94 and MSE dropping to 0.03.
 
 Recommendations
 ---------------
 
 Based on the profiling results:
 
-1. **Dataset Size**: For reliable predictions, use at least 5,000+ samples to achieve R² > 0.75.
+1. **Dataset Size**: For reliable predictions, use at least 7,500+ samples to achieve R² > 0.75. For production applications targeting R² > 0.90, aim for 10,000+ samples.
 
-2. **Memory Planning**: Memory usage is not a significant concern—the model maintains a consistent ~3–7 MiB footprint.
+2. **Memory Planning**: Expect approximately 4–6 MiB for training with datasets of 2,500+ samples. Smaller datasets may require up to 25 MiB due to fixed overhead.
 
-3. **Training Time Budget**: Plan for approximately **3.5–4 seconds per 1,000 samples** for the default 500-epoch configuration.
+3. **Training Time Budget**: Training completes in approximately **0.5 seconds** regardless of dataset size (up to 10,000 samples), making the model highly efficient for iterative development.
 
-4. **Early Stopping**: For production use, enable early stopping to reduce training time while maintaining accuracy.
+4. **Early Stopping**: For production use, enable early stopping to potentially reduce training time further while maintaining accuracy.
 
 Reproducing the Benchmarks
 --------------------------
@@ -154,4 +155,3 @@ The benchmarking code is available in the ``fivedreg_profiling/`` directory:
    jupyter notebook profiling.ipynb
 
 Run all cells to regenerate the benchmark results and plots.
-
