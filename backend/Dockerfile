@@ -31,6 +31,11 @@ COPY backend/main.py .
 # Specify which port the application will run on
 EXPOSE 8000
 
+# Health check configuration
+# Checks if the backend service is responding to HTTP requests
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
+
 # Command to run the FastAPI application
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
